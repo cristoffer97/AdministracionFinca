@@ -1,0 +1,3 @@
+La aplicación consiste en crear un sistema de gestión, que nos permitirá administrar nuestras fincas de frutas, controlando las cuadrillas de la finca, 
+con los manijeros que se encargan de gestionar  las cuadrillas, gestionar las tareas que está llevando a cabo las cuadrillas, gestionar  los tractoristas 
+encargados de dar apoyo a las cuadrillas y de permitir a los peritos realizar informes sobre las variedades de fruta que tenemos y comprobar su estado.
