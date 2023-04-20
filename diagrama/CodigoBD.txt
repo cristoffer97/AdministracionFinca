@@ -1,0 +1,183 @@
+CREATE DATABASE aff;
+use aff;
+
+CREATE TABLE `herramientas` (
+  `Cod_Herramienta` int(11) NOT NULL,
+  `Nombre` varchar(20) NOT NULL,
+  PRIMARY KEY (`Cod_Herramienta`)
+);
+
+CREATE TABLE `fruta` (
+  `Cod_Fruta` int(11) NOT NULL,
+  `Variedad` varchar(30) DEFAULT NULL,
+  `nombre` varchar(20) NOT NULL,
+  PRIMARY KEY (`Cod_Fruta`)
+);
+
+CREATE TABLE `cuadrilla` (
+  `Cod_Cuadrilla` int(11) NOT NULL,
+  `Nombre` varchar(20) NOT NULL,
+  PRIMARY KEY (`Cod_Cuadrilla`)
+);
+
+CREATE TABLE `tractores` (
+  `Cod_Tractor` int(11) NOT NULL,
+  `Matricula` varchar(10) NOT NULL,
+  `herramientas` int(11) NOT NULL,
+  PRIMARY KEY (`Cod_Tractor`),
+  KEY `herramientas` (`herramientas`),
+  CONSTRAINT `tractores_ibfk_1` FOREIGN KEY (`herramientas`) REFERENCES `herramientas` (`Cod_Herramienta`));
+
+CREATE TABLE `tareas` (
+  `Cod_Tarea` int(11) NOT NULL,
+  `nombre` varchar(10) NOT NULL,
+  PRIMARY KEY (`Cod_Tarea`));
+
+CREATE TABLE `tipo_trabajador` (
+  `id_Tipo` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(20) NOT NULL,
+  PRIMARY KEY (`id_Tipo`)
+);
+
+CREATE TABLE `trabajadores` (
+  `Cod_Trabajador` int(11) NOT NULL,
+  `nombre` varchar(20) NOT NULL,
+  `apellido` varchar(50) NOT NULL,
+  `DNI` varchar(9) NOT NULL,
+  `telefono` int(9) NOT NULL,
+  `Cuadrilla` int(11) DEFAULT NULL,
+  `podador` tinyint(1) DEFAULT NULL,
+  `Tipo` int(11) DEFAULT NULL,
+  PRIMARY KEY (`Cod_Trabajador`),
+  UNIQUE KEY `DNI` (`DNI`),
+  KEY `Cuadrilla` (`Cuadrilla`),
+  KEY `Tipo` (`Tipo`),
+  CONSTRAINT `trabajadores_ibfk_1` FOREIGN KEY (`Cuadrilla`) REFERENCES `cuadrilla` (`Cod_Cuadrilla`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `trabajadores_ibfk_2` FOREIGN KEY (`Tipo`) REFERENCES `tipo_trabajador` (`id_Tipo`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `tractor_tractorista` (
+  `ID` int(11) NOT NULL,
+  `id_Tractor` int(11) NOT NULL,
+  `Tractorista` int(11) NOT NULL,
+  `Fecha` date DEFAULT current_timestamp(),
+  PRIMARY KEY (`ID`),
+  KEY `id_Tractor` (`id_Tractor`),
+  KEY `Tractorista` (`Tractorista`),
+  CONSTRAINT `tractor_tractorista_ibfk_1` FOREIGN KEY (`id_Tractor`) REFERENCES `tractores` (`Cod_Tractor`),
+  CONSTRAINT `tractor_tractorista_ibfk_2` FOREIGN KEY (`Tractorista`) REFERENCES `trabajadores` (`Cod_Trabajador`)
+);
+
+CREATE TABLE `informe_perito` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Cod_Perito` int(11) NOT NULL,
+  `Id_Fruta` int(11) NOT NULL,
+  `Asunto` varchar(50) DEFAULT NULL,
+  `Descripcion` varchar(500) NOT NULL,
+  `Fecha` date NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`Id`),
+  KEY `Cod_Perito` (`Cod_Perito`),
+  KEY `Id_Fruta` (`Id_Fruta`),
+  CONSTRAINT `informe_perito_ibfk_1` FOREIGN KEY (`Cod_Perito`) REFERENCES `trabajadores` (`Cod_Trabajador`),
+  CONSTRAINT `informe_perito_ibfk_2` FOREIGN KEY (`Id_Fruta`) REFERENCES `fruta` (`Cod_Fruta`)
+);
+
+CREATE TABLE `registro` (
+  `ID` int(11) NOT NULL,
+  `ID_Cuadrilla` int(11) NOT NULL,
+  `ID_Tarea` int(11) NOT NULL,
+  `ID_Fruta` int(11) NOT NULL,
+  `TipoRecogida` varchar(20) DEFAULT NULL,
+  `Fecha` date DEFAULT current_timestamp(),
+  `CantidadPaleps` int(11) NOT NULL DEFAULT 0,
+  `Nº_Pase` int(11) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `ID_Cuadrilla` (`ID_Cuadrilla`),
+  KEY `ID_Tarea` (`ID_Tarea`),
+  KEY `ID_Fruta` (`ID_Fruta`),
+  CONSTRAINT `registro_ibfk_2` FOREIGN KEY (`ID_Tarea`) REFERENCES `tareas` (`Cod_Tarea`),
+  CONSTRAINT `registro_ibfk_3` FOREIGN KEY (`ID_Fruta`) REFERENCES `fruta` (`Cod_Fruta`)
+);
+
+CREATE TABLE `registrofichar` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Cod_Trabajador` int(11) NOT NULL,
+  `HEntada` timestamp NOT NULL DEFAULT current_timestamp(),
+  `HSalida` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`ID`)
+);
+
+CREATE TABLE `registrotrabajadores` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Cod_Trabajador` int(11) NOT NULL,
+  `DNI` varchar(9) NOT NULL,
+  `Nombre` varchar(20) NOT NULL,
+  `Apellidos` varchar(50) NOT NULL,
+  `FAlta` date NOT NULL DEFAULT current_timestamp(),
+  `FBaja` date NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`ID`),
+  KEY `Cod_Trabajador` (`Cod_Trabajador`)
+);
+
+CREATE TABLE `registro_informe_perito` (
+  `Id` int(11) NOT NULL,
+  `Cod_Perito` int(11) NOT NULL,
+  `Id_Fruta` int(11) NOT NULL,
+  `Asunto` varchar(50) DEFAULT NULL,
+  `Descripcion` varchar(500) NOT NULL,
+  `Fecha` date NOT NULL DEFAULT current_timestamp());
+
+CREATE TABLE `registro_tarea_cuadrilla` (
+  `ID` int(11) NOT NULL,
+  `ID_Cuadrilla` int(11) NOT NULL,
+  `ID_Tarea` int(11) NOT NULL,
+  `ID_Fruta` int(11) NOT NULL,
+  `TipoRecogida` varchar(20) DEFAULT NULL,
+  `Fecha` date DEFAULT current_timestamp(),
+  `CantidadPaleps` int(11) NOT NULL DEFAULT 0,
+  `Nº_Pase` int(11) DEFAULT NULL);
+
+CREATE TABLE `registro_tractor_tractorista` (
+  `ID` int(11) NOT NULL,
+  `id_Tractor` int(11) NOT NULL,
+  `Tractorista` int(11) NOT NULL,
+  `Fecha` date DEFAULT current_timestamp());
+
+
+TRIGGERS (Disparadores)
+
+DELIMITER $$
+CREATE TRIGGER `Borrar_Trabajador_en_Registro` BEFORE DELETE ON `trabajadores` FOR EACH ROW BEGIN  
+UPDATE `registrotrabajadores` SET `FBaja`= now() WHERE Cod_Trabajador=old.Cod_Trabajador;  
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `Insertar_Trabajador_en_Registro` AFTER INSERT ON `trabajadores` FOR EACH ROW BEGIN  
+INSERT INTO registrotrabajadores (`Cod_Trabajador`, `Nombre`, `Apellidos`,`DNI`)  VALUES (new.Cod_Trabajador, new.nombre, new.apellido,new.dni);  
+END
+$$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE TRIGGER `Guardar_Registros_Tractorista_Tractor` BEFORE INSERT ON `tractor_tractorista` FOR EACH ROW BEGIN  
+INSERT INTO registro_tractor_tractorista (`id_Tractor`, `ID_Tractorista`)  VALUES (new.id_Tractor, new.Tractorista);  
+END
+$$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE TRIGGER `Registrar_Informes` AFTER INSERT ON `informe_perito` FOR EACH ROW BEGIN  
+INSERT INTO registro_informe_perito (`Cod_Perito`, `Id_Fruta`, `Asunto`,`Descripcion`)  VALUES (new.Cod_Perito, new.Id_Fruta , new.Asunto,new.Descripcion);  
+END
+$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER `Registrar_Tarea_Cuadrilla` AFTER INSERT ON `registro` FOR EACH ROW BEGIN  
+INSERT INTO `registro_tarea_cuadrilla`(`ID_Cuadrilla`, `ID_Tarea`, `ID_Fruta`, `TipoRecogida`, `CantidadPaleps`, `Nº_Pase`) VALUES (new.ID_Cuadrilla , new.ID_Tarea , new.ID_Fruta ,new.TipoRecogida,new.CantidadPaleps, new.Nº_Pase);  
+END
+$$
+DELIMITER ;
